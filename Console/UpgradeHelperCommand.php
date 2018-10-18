@@ -34,6 +34,8 @@ class UpgradeHelperCommand extends Command
     {
         $this->setName('sd:dev:upgrade-helper');
         $this->setDescription('Helps make the upgrade process more smooth');
+
+        $this->addArgument('diff', InputArgument::REQUIRED, 'Path to diff file');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
