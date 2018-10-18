@@ -40,6 +40,8 @@ class UpgradeHelperCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $changedFiles = file($input->getArgument('diff'));
+        var_dump($changedFiles);
         $preferences = $this->objectManagerConfig->getPreferences();
         foreach ($preferences as $type => $preference) {
             if (strpos($type, 'Magento') === 0 && strpos($preference, 'Magento') === false) {
