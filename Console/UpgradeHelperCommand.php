@@ -40,16 +40,30 @@ class UpgradeHelperCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $changedFiles = file($input->getArgument('diff'));
-        var_dump($changedFiles);
+        // Build an array of preferences...
         $preferences = $this->objectManagerConfig->getPreferences();
+        $preferenceArray = [];
         foreach ($preferences as $type => $preference) {
             if (strpos($type, 'Magento') === 0 && strpos($preference, 'Magento') === false) {
                 // A <preference> for a Magento\ type that doesn't contain "Magento" in the class name
-                echo 'Type: ' . $type . PHP_EOL;
-                echo 'Preference: ' . $preference . PHP_EOL;
-                echo 'File: ' . $this->autoloader->findFile($type) . PHP_EOL;
-                echo '--------' . PHP_EOL;
+                $absoluteFile = realpath($this->autoloader->findFile($type));
+                $start = strpos($absoluteFile, 'vendor');
+                $file = substr($absoluteFile, $start);
+                $preferenceArray[$file] = $preference;
+            }
+        }
+
+        $diff = file($input->getArgument('diff'));
+        foreach ($diff as $line) {
+            if (strpos($line, 'diff -r') !== 0) {
+                continue;
+            }
+            $start = strpos($line, 'vendor');
+            $end = strpos($line, ' ', $start);
+            $file = substr($line, $start, $end - $start);
+            if (array_key_exists($file, $preferenceArray)) {
+                $output->writeln('There is a preference for: ' . $file);
+                $output->writeln('--- preference: ' . $preferenceArray[$file]);
             }
         }
     }

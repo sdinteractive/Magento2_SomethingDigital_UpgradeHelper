@@ -1,15 +1,31 @@
 # Magento2_SomethingDigital_UpgradeHelper
 
-## Generating the diff
+## Usage
 
-#### Clone magento/magento2 from GitHub
+### Generating the diff
 
-#### Generate changed files list
+- Download a ZIP of the old version
+- Download a ZIP of the new version
+- Use `diff -r` to generate the diff
 
-Example
+Example:
 
 ```
-git diff --name-only 2.1.9...2.1.15
+diff -r magento-2-2-6-ee magento-2-2-7-ee > magento-2-2-6-ee--2-2-7-ee.diff
 ```
 
-## Magento Commerce ("Enterprise Edition")
+### How To Run
+
+```
+$ bin/magento sd:dev:upgrade-helper magento-2-2-6-ee--2-2-7-ee.diff
+```
+
+#### Example Output
+
+```
+$ bin/magento sd:dev:upgrade-helper magento-2-2-6-ee--2-2-7-ee.diff
+There is a preference for: vendor/magento/module-catalog/Block/Product/ImageBuilder.php
+--- preference: Company\Module\Block\Product\ImageBuilder
+```
+
+In this case `vendor/magento/module-catalog/Block/Product/ImageBuilder.php` will be changed by the patch, however there is a preference (`Company\Module\Block\Product\ImageBuilder`) for that file.
