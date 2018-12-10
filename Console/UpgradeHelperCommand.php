@@ -97,6 +97,11 @@ class UpgradeHelperCommand extends Command
 
         foreach ($report as $type => $items) {
             $output->writeln('-------- ' . $type . ' --------');
+            if (count($items) == 0) {
+                $output->writeln('No customizations found for ' . strtolower($type));
+                continue;
+            }
+
             foreach ($items as $patched => $customized) {
                 $output->writeln('Patched: ' . $patched);
                 $output->writeln('Customized: ' . $customized);
