@@ -24,6 +24,8 @@ app/code/SomethingDigital/UpgradeHelper
 
 ### Generating the diff
 
+> Are you a Something Digital employee? If so, the diff is likely already available for you here: https://github.com/sdinteractive/m2-diffs
+
 - Download a ZIP of the old version
 - Download a ZIP of the new version
 - Use `diff -r` to generate the diff
