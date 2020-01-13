@@ -76,7 +76,8 @@ class UpgradeHelperCommand extends Command
             $pathParts = pathinfo($file);
             $interesting = [
                 'phtml',
-                'js'
+                'js',
+                'html'
             ];
 
             if (!isset($pathParts['extension'])) {
