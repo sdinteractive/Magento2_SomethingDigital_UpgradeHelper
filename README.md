@@ -59,3 +59,7 @@ Customized: vendor/amzn/amazon-pay-and-login-magento-2-module/src/Core/view/admi
 In this case `vendor/magento/module-catalog/Block/Product/ImageBuilder.php` will be changed by the patch, however there is a preference (`Company\Module\Block\Product\ImageBuilder`) for that file.
 
 The tool has also flagged the vendor/amzn template, however upon inspection it is clear that this is a false positive (the Amazon pay module simply moved templates out of the src folder).
+
+## False Positives
+
+The tool currently does a rough search using linux `find` utility to determine whether or not a given file is overridden. This search is likely to generate false positives. The philosophy here is it's better for the tool to generate false positives, which can then be reviewed to determine if any action is required than it is to have false negatives, which may cause obscure bugs when deployed to production.
