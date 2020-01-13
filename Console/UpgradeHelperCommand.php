@@ -72,12 +72,15 @@ class UpgradeHelperCommand extends Command
             // Is there an override?
             // - Template: .phtml
             // - JavaScript: .js
+            // - Knockout Templates: .html
+            // - LESS: .less
             // todo: Use the framework to detect template override
             $pathParts = pathinfo($file);
             $interesting = [
                 'phtml',
                 'js',
-                'html'
+                'html',
+                'less'
             ];
 
             if (!isset($pathParts['extension'])) {
