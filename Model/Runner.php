@@ -13,6 +13,8 @@ class Runner
 
     private $overrideChecker;
 
+    private $checkers;
+
     private $result = [
         'preferences' => [],
         'overrides' => []
@@ -26,23 +28,29 @@ class Runner
         $this->lineProcessor = $lineProcessor;
         $this->preferenceChecker = $preferenceChecker;
         $this->overrideChecker = $overrideChecker;
+
+        $this->checkers = [
+            'preferences' => $this->preferenceChecker,
+            'overrides' => $this->overrideChecker
+        ];
     }
 
     public function run($diff)
     {
         foreach ($diff as $line) {
             $pathInfo = $this->lineProcessor->toPathInfo($line);
+
             if (empty($pathInfo)) {
                 continue;
             }
 
-            $preferenceResult = $this->preferenceChecker->check($pathInfo);
-            if (!empty($preferenceResult)) {
-                $this->result['preferences'][$preferenceResult['patched']] = $preferenceResult['customized'];
-                continue;
+            foreach ($this->checkers as $type => $checker) {
+                $result = $checker->check($pathInfo);
+                if (!empty($result)) {
+                    $this->result[$type][$result['patched']] = $result['customized'];
+                    continue 2;
+                }
             }
-
-            $overrideResult = $this->overrideChecker->check($pathInfo);
         }
 
         return $this->result;
