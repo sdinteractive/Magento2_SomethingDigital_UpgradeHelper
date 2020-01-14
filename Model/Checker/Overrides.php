@@ -15,45 +15,51 @@ class Overrides
         'requirejs-config.js'
     ];
 
+    private $endPosition;
+
+    /**
+     * Command for checking modules
+     *
+     * Example command:
+     * find . -name gift-card-account.js -path '*\/view/frontend/web/js/view/cart/totals/*'
+     */
+    private function moduleCmd($pathInfo)
+    {
+        $start = strpos($pathInfo['fullpath'], '/view/');
+        $path = substr($pathInfo['fullpath'], $start, $this->endPosition - $start);
+
+        return "find . -name " . $pathInfo['basename'] . " -path '*" . $path . "*'";
+    }
+
+    /**
+     * Command for checking theme
+     *
+     * Example command:
+     * find . -name gift-card-account.js -path '*app/design/*' -path '*web/js/view/cart/totals/*'
+     */
+    private function themeCmd($pathInfo)
+    {
+        $startKey = '/frontend/';
+        $startPos = strpos($pathInfo['fullpath'], $startKey) + strlen($startKey);
+        $path = substr($pathInfo['fullpath'], $startPos, $this->endPosition - $startPos);
+
+        return "find . -name " . $pathInfo['basename'] . " -path '*app/design/*' -path '*" . $path . "*'";
+    }
+
     /**
      * todo: This method could use some clean up
      */
     public function check($pathInfo)
     {
+        $path = $pathInfo['fullpath'];
         if (!$this->shouldCheck($pathInfo)) {
             return [];
         }
 
-        $path = $pathInfo['fullpath'];
+        $this->endPosition = strpos($path, $pathInfo['basename']);
 
-        $pathParts = explode('/', $path);
-        $start = strpos($path, '/view/');
-        $end = strpos($path, $pathInfo['basename']);
-
-        // Check in modules
-        //
-        // Command structure:
-        // find . -name <<basename>> -path <<*/view/{{PATH-AFTER-VIEW-UP-TO-BASENAME}}
-        //
-        // Example command:
-        // find . -name gift-card-account.js -path '*/view/frontend/web/js/view/cart/totals/*'
-        $modulePath = substr($path, $start, $end - $start);
-        $moduleCmd = "find . -name " . $pathInfo['basename'] . " -path '*" . $modulePath . "*'";
-        $moduleResults = explode(PHP_EOL, trim(shell_exec($moduleCmd)));
-
-        // Check in theme
-        //
-        // Command structure:
-        // find . -name <<basename>> -path */app/design/* -path <<PATH-AFTER-/frontend/>>
-        //
-        // Example command:
-        // find . -name gift-card-account.js -path '*app/design/*' -path '*web/js/view/cart/totals/*
-        $themeStartKey = '/frontend/';
-        $themeStartPos = strpos($path, $themeStartKey) + strlen($themeStartKey);
-        $themePath = substr($path, $themeStartPos, $end - $themeStartPos);
-        $themeCmd = "find . -name " . $pathInfo['basename'] . " -path '*app/design/*' -path '*" . $themePath . "*'";
-        $themeResults = explode(PHP_EOL, trim(shell_exec($themeCmd)));
-
+        $moduleResults = explode(PHP_EOL, trim(shell_exec($this->moduleCmd($pathInfo))));
+        $themeResults = explode(PHP_EOL, trim(shell_exec($this->themeCmd($pathInfo))));
         $results = array_merge($moduleResults, $themeResults);
 
         foreach ($results as $result) {
@@ -81,6 +87,20 @@ class Overrides
 
         if (in_array($pathInfo['basename'], $this->whitelistedBasenames)) {
             return false;
+        }
+
+        $ignored = ['dev/tests', 'setup/view/magento'];
+        foreach ($ignored as $needle) {
+            if (strpos($pathInfo['fullpath'], $needle) !== false) {
+                return false;
+            }
+        }
+
+        $mustMatch = ['/view/'];
+        foreach ($mustMatch as $needle) {
+            if (strpos($pathInfo['fullpath'], $needle) === false) {
+                return false;
+            }
         }
 
         return true;
