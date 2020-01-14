@@ -11,6 +11,8 @@ class Preferences
 
     private $preferenceArray = [];
 
+    private $autoloader;
+
     public function __construct(
         ObjectManagerConfig $objectManagerConfig
     ) {
