@@ -20,17 +20,17 @@ class Preferences
         $this->buildPreferenceArray();
     }
 
-    public function check($line)
+    public function check($pathInfo)
     {
-        $start = strpos($line, 'vendor');
-        $end = strpos($line, ' ', $start);
-        $file = substr($line, $start, $end - $start);
-        if (array_key_exists($file, $this->preferenceArray)) {
+        $path = $pathInfo['fullpath'];
+        if (array_key_exists($path, $this->preferenceArray)) {
             return [
-                'patched' => $file,
-                'customized' => $this->preferenceArray[$file]
+                'patched' => $path,
+                'customized' => $this->preferenceArray[$path]
             ];
         }
+
+        return [];
     }
 
     private function buildPreferenceArray()

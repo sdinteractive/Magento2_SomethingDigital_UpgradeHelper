@@ -8,11 +8,37 @@ use Magento\Framework\ObjectManager\ConfigInterface as ObjectManagerConfig;
 class LineProcessor
 {
     /**
-     * In diffs that are generated correctly (per documentation) we can always
-     * expect the lines to process to start with `diff -r`
+     * Return array with both pathinfo and fullpath
+     *
+     * Path is processed as follows...
+     *
+     * Before:
+     *
+     * diff -r Magento-EE-2.3.2-2019-06-13-04-50-34/vendor/magento/module-catalog/Controller/Adminhtml/Product/Gallery/Upload.php Magento-EE-2.3.2-p2-2019-10-09-01-47-56/vendor/magento/module-catalog/Controller/Adminhtml/Product/Gallery/Upload.php
+     *
+     * After:
+     *
+     * vendor/magento/module-catalog/Controller/Adminhtml/Product/Gallery/Upload.php
      */
-    public function shouldProcess($line)
+    public function toPathInfo($line)
     {
-        return strpos($line, 'diff -r') === 0;
+        // Skip lines that don't start with `diff -r`
+        if (strpos($line, 'diff -r') !== 0) {
+            return [];
+        }
+
+        $start = strpos($line, 'vendor');
+        if ($start === false) {
+            return [];
+        }
+
+        $end = strpos($line, ' ', $start);
+
+        $path = substr($line, $start, $end - $start);
+
+        return array_merge(
+            pathinfo($path),
+            ['fullpath' => $path]
+        );
     }
 }
