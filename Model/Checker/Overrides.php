@@ -92,16 +92,11 @@ class Overrides
             return false;
         }
 
-        if (strpos($result, 'vendor/magento') !== false) {
-            return false;
-        }
-
-        if (strpos($result, 'dev/tests') !== false) {
-            return false;
-        }
-
-        if (strpos($result, 'setup/view/magento') !== false) {
-            return false;
+        $ignored = ['vendor/magento', 'dev/tests', 'setup/view/magento'];
+        foreach ($ignored as $needle) {
+            if (strpos($result, $needle) !== false) {
+                return false;
+            }
         }
 
         if ($result == $path) {
