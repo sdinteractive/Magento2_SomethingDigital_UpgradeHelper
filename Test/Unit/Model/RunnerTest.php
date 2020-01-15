@@ -36,13 +36,22 @@ class RunnerTest extends TestCase
     public function testRun()
     {
         $diff = [
-            'diff -r Magento-EE-2.3.1/vendor/magento/module-sales-rule/view/frontend/web/js/action/set-coupon-code.js Magento-EE-2.3.3/vendor/magento/module-sales-rule/view/frontend/web/js/action/set-coupon-code.js'
+            'diff -r Magento-EE-2.3.1/vendor/magento/module-sales-rule/view/frontend/web/js/action/set-coupon-code.js Magento-EE-2.3.3/vendor/magento/module-sales-rule/view/frontend/web/js/action/set-coupon-code.js',
+            'diff -r Magento-EE-2.3.1/vendor/magento/module-checkout/view/frontend/web/js/view/billing-address.js Magento-EE-2.3.3/vendor/magento/module-checkout/view/frontend/web/js/view/billing-address.js'
         ];
 
         $result = $this->runner->run($diff);
+
+        // Theme (app/design) .js override
         $this->assertEquals(
             $result['overrides']['vendor/magento/module-sales-rule/view/frontend/web/js/action/set-coupon-code.js'],
             'app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_SalesRule/web/js/action/set-coupon-code.js'
+        );
+
+        // Module (app/code) .js override
+        $this->assertEquals(
+            $result['overrides']['vendor/magento/module-checkout/view/frontend/web/js/view/billing-address.js'],
+            'app/code/SomethingDigitalUpgradeHelper/Module/view/frontend/web/js/view/billing-address.js'
         );
     }
 }
