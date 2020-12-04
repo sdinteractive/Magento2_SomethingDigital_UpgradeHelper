@@ -37,7 +37,7 @@ class UpgradeHelperCommand extends Command
             foreach ($items as $patched => $customized) {
                 $output->writeln('Patched: ' . $patched);
                 if (is_array($customized)) {
-                    foreach ($customized as $customizedFiile) {
+                    foreach ($customized as $customizedFile) {
                         $output->writeln('Customized: ' . $customizedFile);
                     }
                 }

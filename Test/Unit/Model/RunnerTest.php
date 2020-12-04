@@ -58,7 +58,7 @@ class RunnerTest extends TestCase
             'diff -r Magento-EE-2.3.1/vendor/magento/module-checkout/view/frontend/web/js/view/billing-address.js Magento-EE-2.3.3/vendor/magento/module-checkout/view/frontend/web/js/view/billing-address.js',
             'diff -r Magento-EE-2.3.1/vendor/magento/module-bundle/view/frontend/templates/js/components.phtml Magento-EE-2.3.3/vendor/magento/module-bundle/view/frontend/templates/js/components.phtml',
             'diff -r Magento-EE-2.3.1/vendor/magento/module-checkout/view/frontend/web/template/billing-address/details.html Magento-EE-2.3.3/vendor/magento/module-checkout/view/frontend/web/template/billing-address/details.html',
-            'diff -r Magento-EE-2.3.1/vendor/magento/module-customer/view/frontend/templates/form/forgotpasswords.phtml Magento-EE-2.3.3/vendor/magento/module-customer/view/frontend/templates/form/forgotpasswords.phtml',
+            'diff -r Magento-EE-2.3.1/vendor/magento/module-customer/view/frontend/templates/form/forgotpassword.phtml Magento-EE-2.3.3/vendor/magento/module-customer/view/frontend/templates/form/forgotpassword.phtml',
             'diff -r Magento-EE-2.3.1/vendor/magento/module-catalog-rule/Controller/Adminhtml/Promo/Catalog/Save.php Magento-EE-2.3.3/vendor/magento/module-catalog-rule/Controller/Adminhtml/Promo/Catalog/Save.php'
         ];
 
@@ -114,15 +114,15 @@ class RunnerTest extends TestCase
             'SomethingDigitalUpgradeHelper\Module\Controller\Adminhtml\Promo\Catalog\Save'
         );
 
-        // Preference
+        // Theme (app/design) .phtml multiple overrides of the same file in different themes
         $this->assertTrue(
             $this->arrays_are_similar(
-                $result['overrides']['vendor/magento/module-customer/view/frontend/templates/form/forgotpasswords.phtml'],
+                $result['overrides']['vendor/magento/module-customer/view/frontend/templates/form/forgotpassword.phtml'],
                 [
-                    'app/design/frontend/SomethingDigitalUpgradeHelper/theme2/Magento_Customer/templates/form/forgotpasswords.phtml',
-                    'app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_Customer/templates/form/forgotpasswords.phtml',
-                    'app/code/SomethingDigital/UpgradeHelper/Test/Fixtures/app/design/frontend/SomethingDigitalUpgradeHelper/theme2/Magento_Customer/templates/form/forgotpasswords.phtml',
-                    'app/code/SomethingDigital/UpgradeHelper/Test/Fixtures/app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_Customer/templates/form/forgotpasswords.phtml'
+                    'app/design/frontend/SomethingDigitalUpgradeHelper/theme2/Magento_Customer/templates/form/forgotpassword.phtml',
+                    'app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_Customer/templates/form/forgotpassword.phtml',
+                    'app/code/SomethingDigital/UpgradeHelper/Test/Fixtures/app/design/frontend/SomethingDigitalUpgradeHelper/theme2/Magento_Customer/templates/form/forgotpassword.phtml',
+                    'app/code/SomethingDigital/UpgradeHelper/Test/Fixtures/app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_Customer/templates/form/forgotpassword.phtml'
                 ]
             )
         );
