@@ -18,7 +18,7 @@ class RunnerTest extends TestCase
     private $objectManagerConfig;
     private $preferenceChecker;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $objectManager = new ObjectManager($this);
@@ -58,52 +58,102 @@ class RunnerTest extends TestCase
             'diff -r Magento-EE-2.3.1/vendor/magento/module-checkout/view/frontend/web/js/view/billing-address.js Magento-EE-2.3.3/vendor/magento/module-checkout/view/frontend/web/js/view/billing-address.js',
             'diff -r Magento-EE-2.3.1/vendor/magento/module-bundle/view/frontend/templates/js/components.phtml Magento-EE-2.3.3/vendor/magento/module-bundle/view/frontend/templates/js/components.phtml',
             'diff -r Magento-EE-2.3.1/vendor/magento/module-checkout/view/frontend/web/template/billing-address/details.html Magento-EE-2.3.3/vendor/magento/module-checkout/view/frontend/web/template/billing-address/details.html',
-            'diff -r Magento-EE-2.3.1/vendor/magento/module-customer/view/frontend/templates/form/forgotpassword.phtml Magento-EE-2.3.3/vendor/magento/module-customer/view/frontend/templates/form/forgotpassword.phtml',
+            'diff -r Magento-EE-2.3.1/vendor/magento/module-customer/view/frontend/templates/form/forgotpasswords.phtml Magento-EE-2.3.3/vendor/magento/module-customer/view/frontend/templates/form/forgotpasswords.phtml',
             'diff -r Magento-EE-2.3.1/vendor/magento/module-catalog-rule/Controller/Adminhtml/Promo/Catalog/Save.php Magento-EE-2.3.3/vendor/magento/module-catalog-rule/Controller/Adminhtml/Promo/Catalog/Save.php'
         ];
 
         $result = $this->runner->run($diff);
 
         // Theme (app/design) .js override
-        $this->assertEquals(
-            $result['overrides']['vendor/magento/module-sales-rule/view/frontend/web/js/action/set-coupon-code.js'],
-            ['app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_SalesRule/web/js/action/set-coupon-code.js']
+        $this->assertTrue(
+            $this->arrays_are_similar(
+                $result['overrides']['vendor/magento/module-sales-rule/view/frontend/web/js/action/set-coupon-code.js'],
+                [
+                    'app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_SalesRule/web/js/action/set-coupon-code.js',
+                    'app/code/SomethingDigital/UpgradeHelper/Test/Fixtures/app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_SalesRule/web/js/action/set-coupon-code.js'
+                ]
+            )
         );
 
         // Theme (app/design) .phtml override
-        $this->assertEquals(
-            $result['overrides']['vendor/magento/module-bundle/view/frontend/templates/js/components.phtml'],
-            ['app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_Catalog/templates/js/components.phtml']
+        $this->assertTrue(
+            $this->arrays_are_similar(
+                $result['overrides']['vendor/magento/module-bundle/view/frontend/templates/js/components.phtml'],
+                [
+                    'app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_Catalog/templates/js/components.phtml',
+                    'app/code/SomethingDigital/UpgradeHelper/Test/Fixtures/app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_Catalog/templates/js/components.phtml'
+                ]
+            )
         );
 
         // Module (app/code) .js override
-        $this->assertEquals(
-            $result['overrides']['vendor/magento/module-checkout/view/frontend/web/js/view/billing-address.js'],
-            ['app/code/SomethingDigitalUpgradeHelper/Module/view/frontend/web/js/view/billing-address.js']
+        $this->assertTrue(
+            $this->arrays_are_similar(
+                $result['overrides']['vendor/magento/module-checkout/view/frontend/web/js/view/billing-address.js'],
+                [
+                    'app/code/SomethingDigital/UpgradeHelper/Test/Fixtures/app/code/SomethingDigitalUpgradeHelper/Module/view/frontend/web/js/view/billing-address.js',
+                    'app/code/SomethingDigitalUpgradeHelper/Module/view/frontend/web/js/view/billing-address.js'
+                ]
+            )
         );
 
         // Module (vendor/) .html override
-        $this->assertEquals(
-            $result['overrides']['vendor/magento/module-checkout/view/frontend/web/template/billing-address/details.html'],
-            ['vendor/somethingdigitalupgradehelper/module/src/view/frontend/web/template/billing-address/details.html']
+        $this->assertTrue(
+            $this->arrays_are_similar(
+                $result['overrides']['vendor/magento/module-checkout/view/frontend/web/template/billing-address/details.html'],
+                [
+                    'app/code/SomethingDigital/UpgradeHelper/Test/Fixtures/vendor/somethingdigitalupgradehelper/module/src/view/frontend/web/template/billing-address/details.html',
+                    'vendor/somethingdigitalupgradehelper/module/src/view/frontend/web/template/billing-address/details.html'
+                ]
+            )
         );
 
         // Preference
         $this->assertEquals(
             $result['preferences']['vendor/magento/module-catalog-rule/Controller/Adminhtml/Promo/Catalog/Save.php'],
-            ['SomethingDigitalUpgradeHelper\Module\Controller\Adminhtml\Promo\Catalog\Save']
+            'SomethingDigitalUpgradeHelper\Module\Controller\Adminhtml\Promo\Catalog\Save'
         );
 
         // Preference
-        $this->assertEquals(
-            $result['preferences']['vendor/magento/module-checkout/view/frontend/web/template/minicart/item/default.html'],
-            [
-                'app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_Customer/templates/form/forgotpassword.phtml',
-                'app/design/frontend/SomethingDigitalUpgradeHelper/theme2/Magento_Customer/templates/form/forgotpassword.phtml'
-            ]
+        $this->assertTrue(
+            $this->arrays_are_similar(
+                $result['overrides']['vendor/magento/module-customer/view/frontend/templates/form/forgotpasswords.phtml'],
+                [
+                    'app/design/frontend/SomethingDigitalUpgradeHelper/theme2/Magento_Customer/templates/form/forgotpasswords.phtml',
+                    'app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_Customer/templates/form/forgotpasswords.phtml',
+                    'app/code/SomethingDigital/UpgradeHelper/Test/Fixtures/app/design/frontend/SomethingDigitalUpgradeHelper/theme2/Magento_Customer/templates/form/forgotpasswords.phtml',
+                    'app/code/SomethingDigital/UpgradeHelper/Test/Fixtures/app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_Customer/templates/form/forgotpasswords.phtml'
+                ]
+            )
         );
 
         // TODO
         // - Line in diff that doesn't match override OR preference
+    }
+
+     /**
+     * Determine if two associative arrays are similar
+     *
+     * Both arrays must have the same indexes with identical values
+     * without respect to key ordering 
+     * 
+     * @param array $a
+     * @param array $b
+     * @return bool
+     */
+    protected function arrays_are_similar($a, $b) {
+        // if the indexes don't match, return immediately
+        if (count(array_diff_assoc($a, $b))) {
+            return false;
+        }
+        // we know that the indexes, but maybe not values, match.
+        // compare the values between the two arrays
+        foreach($a as $k => $v) {
+            if ($v !== $b[$k]) {
+                return false;
+            }
+        }
+        // we have identical indexes, and no unequal values
+        return true;
     }
 }
