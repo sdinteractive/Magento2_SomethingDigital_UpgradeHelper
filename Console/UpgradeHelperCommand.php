@@ -36,7 +36,11 @@ class UpgradeHelperCommand extends Command
             $output->writeln('-------- ' . $type . ' --------');
             foreach ($items as $patched => $customized) {
                 $output->writeln('Patched: ' . $patched);
-                $output->writeln('Customized: ' . $customized);
+                if (is_array($customized)) {
+                    foreach ($customized as $customizedFiile) {
+                        $output->writeln('Customized: ' . $customizedFile);
+                    }
+                }
             }
         }
     }

@@ -61,18 +61,23 @@ class Overrides
         $moduleResults = explode(PHP_EOL, trim(shell_exec($this->moduleCmd($pathInfo))));
         $themeResults = explode(PHP_EOL, trim(shell_exec($this->themeCmd($pathInfo))));
         $results = array_merge($moduleResults, $themeResults);
+        $output = [];
 
         foreach ($results as $result) {
             $result = substr($result, 2);
             if ($this->isOverride($result, $path)) {
-                return [
-                    'patched' => $path,
-                    'customized' => $result
-                ];
+                $customized[] = $result;
             }
         }
 
-        return [];
+        if (!empty($customized)) {
+            $output = [
+                'patched' => $path,
+                'customized' => $customized
+            ];
+        }
+
+        return $output;
     }
 
     private function shouldCheck($pathInfo)
