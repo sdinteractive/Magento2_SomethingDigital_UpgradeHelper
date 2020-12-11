@@ -30,7 +30,18 @@ class UpgradeHelperCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $diff = file($input->getArgument('diff'));
-        $result = $this->runner->run($diff);
+
+        $result = [];
+        $result['preferences'] = [];
+        $result['overrides'] = [];
+
+        foreach ($diff as $line) {
+            extract($this->runner->run($line));
+            if ($type === '') {
+                continue;
+            }
+            $result[$type][$path] = $items;
+        }
 
         foreach ($result as $type => $items) {
             $output->writeln('-------- ' . $type . ' --------');

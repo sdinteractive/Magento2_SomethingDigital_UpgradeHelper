@@ -62,7 +62,13 @@ class RunnerTest extends TestCase
             'diff -r Magento-EE-2.3.1/vendor/magento/module-catalog-rule/Controller/Adminhtml/Promo/Catalog/Save.php Magento-EE-2.3.3/vendor/magento/module-catalog-rule/Controller/Adminhtml/Promo/Catalog/Save.php'
         ];
 
-        $result = $this->runner->run($diff);
+        $result = [];
+        $result['preferences'] = [];
+        $result['overrides'] = [];
+        foreach ($diff as $line) {
+            extract($this->runner->run($line));
+            $result[$type][$path] = $items;
+        }
 
         // Theme (app/design) .js override
         $this->assertTrue(

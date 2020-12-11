@@ -35,24 +35,29 @@ class Runner
         ];
     }
 
-    public function run($diff)
+    public function run($line)
     {
-        foreach ($diff as $line) {
-            $pathInfo = $this->lineProcessor->toPathInfo($line);
+        $result = [];
+        $result['type'] = '';
+        $result['items'] = [];
+        $result['path'] = '';
 
-            if (empty($pathInfo)) {
+        $pathInfo = $this->lineProcessor->toPathInfo($line);
+
+        if (empty($pathInfo)) {
+            return $result;
+        }
+
+        foreach ($this->checkers as $type => $checker) {
+            $checked = $checker->check($pathInfo);
+            if (!empty($checked)) {
+                $result['type'] = $type;
+                $result['items'] = $checked['customized'];
+                $result['path'] = $pathInfo['fullpath'];
                 continue;
-            }
-
-            foreach ($this->checkers as $type => $checker) {
-                $result = $checker->check($pathInfo);
-                if (!empty($result)) {
-                    $this->result[$type][$result['patched']] = $result['customized'];
-                    continue 2;
-                }
             }
         }
 
-        return $this->result;
+        return $result;
     }
 }
