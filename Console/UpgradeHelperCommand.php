@@ -37,18 +37,11 @@ class UpgradeHelperCommand extends Command
         $result['preferences'] = [];
         $result['overrides'] = [];
 
-        $progressBar = new ProgressBar($output, 100);
-        $progressBar->setFormat('[%bar%] %percent:3s%% (remaining: %remaining%)');
-        $lastPos = 0;
-        $i = 0;
+        $progressBar = new ProgressBar($output, $lines);
+        $progressBar->setFormat('Lines in diff processed: %current%/%max% [%bar%] %percent:3s%% (elapsed: %elapsed% | remaining: ~%remaining%)');
 
         foreach ($diff as $line) {
-            $i++;
-            $pos = round(($i / $lines) * 100);
-            if ($pos > $lastPos) {
-                $lastPos = $pos;
-                $progressBar->setProgress($pos);
-            }
+            $progressBar->advance();
             extract($this->runner->run($line));
             if ($type === '') {
                 continue;
