@@ -4,6 +4,7 @@ namespace SomethingDigital\UpgradeHelper\Console;
 
 use SomethingDigital\UpgradeHelper\Model\Runner;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -30,18 +31,32 @@ class UpgradeHelperCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $diff = file($input->getArgument('diff'));
+        $lines = count($diff);
 
         $result = [];
         $result['preferences'] = [];
         $result['overrides'] = [];
 
+        $progressBar = new ProgressBar($output, 100);
+        $progressBar->setFormat('[%bar%] %percent:3s%% (remaining: %remaining%)');
+        $lastPos = 0;
+        $i = 0;
+
         foreach ($diff as $line) {
+            $i++;
+            $pos = round(($i / $lines) * 100);
+            if ($pos > $lastPos) {
+                $lastPos = $pos;
+                $progressBar->setProgress($pos);
+            }
             extract($this->runner->run($line));
             if ($type === '') {
                 continue;
             }
             $result[$type][$path] = $items;
         }
+        $progressBar->finish();
+        echo PHP_EOL;
 
         foreach ($result as $type => $items) {
             $output->writeln('-------- ' . $type . ' --------');
