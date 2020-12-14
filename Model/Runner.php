@@ -15,11 +15,6 @@ class Runner
 
     private $checkers;
 
-    private $result = [
-        'preferences' => [],
-        'overrides' => []
-    ];
-
     public function __construct(
         LineProcessor $lineProcessor,
         PreferenceChecker $preferenceChecker,
@@ -35,24 +30,29 @@ class Runner
         ];
     }
 
-    public function run($diff)
+    public function run($line)
     {
-        foreach ($diff as $line) {
-            $pathInfo = $this->lineProcessor->toPathInfo($line);
+        $result = [];
+        $result['type'] = '';
+        $result['items'] = [];
+        $result['path'] = '';
 
-            if (empty($pathInfo)) {
-                continue;
-            }
+        $pathInfo = $this->lineProcessor->toPathInfo($line);
 
-            foreach ($this->checkers as $type => $checker) {
-                $result = $checker->check($pathInfo);
-                if (!empty($result)) {
-                    $this->result[$type][$result['patched']] = $result['customized'];
-                    continue 2;
-                }
+        if (empty($pathInfo)) {
+            return $result;
+        }
+
+        foreach ($this->checkers as $type => $checker) {
+            $checked = $checker->check($pathInfo);
+            if (!empty($checked)) {
+                $result['type'] = $type;
+                $result['items'] = $checked['customized'];
+                $result['path'] = $pathInfo['fullpath'];
+                break;
             }
         }
 
-        return $this->result;
+        return $result;
     }
 }
