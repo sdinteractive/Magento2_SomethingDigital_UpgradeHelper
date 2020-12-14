@@ -111,7 +111,7 @@ class RunnerTest extends TestCase
         // Preference
         $this->assertEquals(
             $result['preferences']['vendor/magento/module-catalog-rule/Controller/Adminhtml/Promo/Catalog/Save.php'],
-            'SomethingDigitalUpgradeHelper\Module\Controller\Adminhtml\Promo\Catalog\Save'
+            ['SomethingDigitalUpgradeHelper\Module\Controller\Adminhtml\Promo\Catalog\Save']
         );
 
         // Theme (app/design) .phtml multiple overrides of the same file in different themes
