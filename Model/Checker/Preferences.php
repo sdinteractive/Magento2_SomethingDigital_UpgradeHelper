@@ -28,7 +28,7 @@ class Preferences
         if (array_key_exists($path, $this->preferenceArray)) {
             return [
                 'patched' => $path,
-                'customized' => $this->preferenceArray[$path]
+                'customized' => [$this->preferenceArray[$path]]
             ];
         }
 
