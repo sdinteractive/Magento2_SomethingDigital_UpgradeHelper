@@ -15,11 +15,6 @@ class Runner
 
     private $checkers;
 
-    private $result = [
-        'preferences' => [],
-        'overrides' => []
-    ];
-
     public function __construct(
         LineProcessor $lineProcessor,
         PreferenceChecker $preferenceChecker,
@@ -54,7 +49,7 @@ class Runner
                 $result['type'] = $type;
                 $result['items'] = $checked['customized'];
                 $result['path'] = $pathInfo['fullpath'];
-                continue;
+                break;
             }
         }
 
