@@ -42,6 +42,8 @@ class UpgradeHelperCommand extends Command
 
         foreach ($diff as $line) {
             $progressBar->advance();
+
+            // Extract will populate: $type, $path, $items
             extract($this->runner->run($line));
             if ($type === '') {
                 continue;

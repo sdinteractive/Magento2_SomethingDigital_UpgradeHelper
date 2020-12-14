@@ -66,6 +66,7 @@ class RunnerTest extends TestCase
         $result['preferences'] = [];
         $result['overrides'] = [];
         foreach ($diff as $line) {
+            // Extract will populate: $type, $path, $items
             extract($this->runner->run($line));
             $result[$type][$path] = $items;
         }
