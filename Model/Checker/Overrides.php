@@ -2,6 +2,8 @@
 
 namespace SomethingDigital\UpgradeHelper\Model\Checker;
 
+use SomethingDigital\UpgradeHelper\Model\FileIndex;
+
 class Overrides
 {
     private $interestingExtensions = [
@@ -16,6 +18,14 @@ class Overrides
     ];
 
     private $endPosition;
+
+    private $fileIndex;
+
+    public function __construct(
+        FileIndex $fileIndex
+    ) {
+        $this->fileIndex = $fileIndex;
+    }
 
     /**
      * Command for checking modules
@@ -57,14 +67,11 @@ class Overrides
         }
 
         $this->endPosition = strpos($path, $pathInfo['basename']);
-
-        $moduleResults = explode(PHP_EOL, trim(shell_exec($this->moduleCmd($pathInfo))));
-        $themeResults = explode(PHP_EOL, trim(shell_exec($this->themeCmd($pathInfo))));
-        $results = array_merge($moduleResults, $themeResults);
+        
+        $results = $this->fileIndex->getOverrideResults($pathInfo);
         $output = [];
 
         foreach ($results as $result) {
-            $result = substr($result, 2);
             if ($this->isOverride($result, $path)) {
                 $customized[] = $result;
             }

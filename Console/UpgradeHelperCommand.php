@@ -2,6 +2,7 @@
 
 namespace SomethingDigital\UpgradeHelper\Console;
 
+use SomethingDigital\UpgradeHelper\Model\FileIndex;
 use SomethingDigital\UpgradeHelper\Model\Runner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -13,11 +14,15 @@ class UpgradeHelperCommand extends Command
 {
     private $runner;
 
+    private $fileIndex;
+
     public function __construct(
-        Runner $runner
+        Runner $runner,
+        FileIndex $fileIndex
     ) {
         parent::__construct(null);
         $this->runner = $runner;
+        $this->fileIndex = $fileIndex;
     }
 
     protected function configure()
@@ -36,6 +41,9 @@ class UpgradeHelperCommand extends Command
         $result = [];
         $result['preferences'] = [];
         $result['overrides'] = [];
+
+        $output->writeln('Populating file override index...');
+        $this->fileIndex->populateIndex();
 
         $progressBar = new ProgressBar($output, $lines);
         $progressBar->setFormat('Lines in diff processed: %current%/%max% [%bar%] %percent:3s%% (elapsed: %elapsed% | remaining: ~%remaining%)');
