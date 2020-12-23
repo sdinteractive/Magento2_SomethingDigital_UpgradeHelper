@@ -88,6 +88,8 @@ class FileIndex
     }
 
     /**
+     * Example: '/^.+\.(phtml|js|html|less)$/i';
+     *
      * @return string
      */
     private function getFilePattern(): string
@@ -97,6 +99,12 @@ class FileIndex
     }
 
     /**
+     * Module override example:
+     * vendor/magento/module-sales-rule/view/frontend/web/js/action/set-coupon-code.js => /view/frontend/web/js/action/
+     *
+     * Theme override example:
+     * vendor/magento/module-sales-rule/view/frontend/web/js/action/set-coupon-code.js => /web/js/action/
+     *
      * @param string $basename
      * @param string $fullPath
      * @param string $overrideType
@@ -105,7 +113,7 @@ class FileIndex
     private function getSubPath(string $basename, string $fullPath, string $overrideType): string
     {
         $baseDir = $overrideType === self::THEME_OVERRIDE ? '/frontend/' : '/view/';
-        $offset = $overrideType === self::THEME_OVERRIDE ? strlen($baseDir) : 0;
+        $offset = $overrideType === self::THEME_OVERRIDE ? strlen($baseDir) - 1 : 0;
         $startPos = strpos($fullPath, $baseDir) + $offset;
         $endPos = strpos($fullPath, $basename);
         return substr($fullPath, $startPos, $endPos - $startPos);
