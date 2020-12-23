@@ -4,9 +4,9 @@ namespace SomethingDigital\UpgradeHelper\Model;
 
 class FileIndex
 {
-    const THEME_OVERRIDE = 'theme_override';
+    const THEME_FILES_KEY = 'theme_override';
 
-    const MODULE_OVERRIDE = 'module_override';
+    const MODULE_FILES_KEY = 'module_override';
 
     const INTERESTING_EXTENSIONS = [
             'phtml',
@@ -20,23 +20,46 @@ class FileIndex
     ];
 
     /**
+     * Maps basenames to an array of file paths for module and theme files
+     *
+     * Example structure:
+     *[
+     *    self::MODULE_FILES_KEY => [
+     *        'billing-address.js' => [
+     *            'app/code/SomethingDigitalUpgradeHelper/Module/view/frontend/web/js/view/billing-address.js',
+     *            ...
+     *        ],
+     *    ],
+     *]
+     *
      * @var array[]
      */
     private $index;
 
+    /**
+     *
+     * Example: '/^.+\.(phtml|js|html|less)$/i'
+     *
+     * @var string
+     */
+    private $filePattern;
+
     public function __construct()
     {
         $this->index = [
-            self::THEME_OVERRIDE => [],
-            self::MODULE_OVERRIDE => [],
+            self::THEME_FILES_KEY => [],
+            self::MODULE_FILES_KEY => [],
         ];
+
+        $fileExtensionGroup = implode('|', self::INTERESTING_EXTENSIONS);
+        $this->filePattern = "/^.+\.($fileExtensionGroup)\$/i";
     }
 
     public function populateIndex(): void
     {
-        $this->populateIndexForPath(self::THEME_OVERRIDE, 'app/design/');
-        $this->populateIndexForPath(self::MODULE_OVERRIDE, 'vendor/');
-        $this->populateIndexForPath(self::MODULE_OVERRIDE, 'app/code/');
+        $this->populateIndexForPath(self::THEME_FILES_KEY, 'app/design/');
+        $this->populateIndexForPath(self::MODULE_FILES_KEY, 'vendor/');
+        $this->populateIndexForPath(self::MODULE_FILES_KEY, 'app/code/');
     }
 
     /**
@@ -45,57 +68,49 @@ class FileIndex
      */
     public function getOverrideResults(array $pathInfo): array
     {
-        $moduleResults = $this->getResultsByOverrideType($pathInfo, self::MODULE_OVERRIDE);
-        $themeResults = $this->getResultsByOverrideType($pathInfo, self::THEME_OVERRIDE);
+        $moduleResults = $this->getResultsByFileType($pathInfo, self::MODULE_FILES_KEY);
+        $themeResults = $this->getResultsByFileType($pathInfo, self::THEME_FILES_KEY);
         return array_merge($moduleResults, $themeResults);
     }
 
     /**
-     * @param string $overrideType
+     * Populates the index for the specified file type
+     * Recursively iterates through all files matching the file pattern (.js, .phtml, .less, .html) starting at $basePath
+     * Maps each file's basename to its full path
+     * 
+     * @param string $fileType
      * @param string $basePath
      */
     private function populateIndexForPath(
-        string $overrideType,
+        string $fileType,
         string $basePath
     ): void {
-        $filePattern = $this->getFilePattern();
         $directory = new \RecursiveDirectoryIterator($basePath);
         $iterator = new \RecursiveIteratorIterator($directory);
-        $regexIterator = new \RegexIterator($iterator, $filePattern, \RecursiveRegexIterator::GET_MATCH);
+        $regexIterator = new \RegexIterator($iterator, $this->filePattern, \RecursiveRegexIterator::GET_MATCH);
 
         foreach ($regexIterator as $dirInfo) {
             $fullPath = $dirInfo[0];
             if (!in_array(basename($fullPath), self::WHITELISTED_BASENAMES)) {
-                $this->index[$overrideType][basename($fullPath)][] = $fullPath;
+                $this->index[$fileType][basename($fullPath)][] = $fullPath;
             }
         }
     }
 
     /**
      * @param array $pathInfo
-     * @param string $overrideType
+     * @param string $fileType
      * @return array
      */
-    private function getResultsByOverrideType(array $pathInfo, string $overrideType): array
+    private function getResultsByFileType(array $pathInfo, string $fileType): array
     {
         $basenameFromDiff = $pathInfo['basename'];
         $fullPathFromDiff = $pathInfo['fullpath'];
-        $subPath = $this->getSubPath($basenameFromDiff, $fullPathFromDiff, $overrideType);
-        $fullPaths = $this->index[$overrideType][$basenameFromDiff] ?? [];
+        $subPath = $this->getSubPath($basenameFromDiff, $fullPathFromDiff, $fileType);
+        $fullPaths = $this->index[$fileType][$basenameFromDiff] ?? [];
         return array_filter($fullPaths, function ($fullPath) use ($subPath) {
             return strpos($fullPath, $subPath) !== false;
         });
-    }
-
-    /**
-     * Example: '/^.+\.(phtml|js|html|less)$/i';
-     *
-     * @return string
-     */
-    private function getFilePattern(): string
-    {
-        $fileExtensionGroup = implode('|', self::INTERESTING_EXTENSIONS);
-        return "/^.+\.($fileExtensionGroup)\$/i";
     }
 
     /**
@@ -107,13 +122,13 @@ class FileIndex
      *
      * @param string $basename
      * @param string $fullPath
-     * @param string $overrideType
+     * @param string $fileType
      * @return string
      */
-    private function getSubPath(string $basename, string $fullPath, string $overrideType): string
+    private function getSubPath(string $basename, string $fullPath, string $fileType): string
     {
-        $baseDir = $overrideType === self::THEME_OVERRIDE ? '/frontend/' : '/view/';
-        $offset = $overrideType === self::THEME_OVERRIDE ? strlen($baseDir) - 1 : 0;
+        $baseDir = $fileType === self::THEME_FILES_KEY ? '/frontend/' : '/view/';
+        $offset = $fileType === self::THEME_FILES_KEY ? strlen($baseDir) - 1 : 0;
         $startPos = strpos($fullPath, $baseDir) + $offset;
         $endPos = strpos($fullPath, $basename);
         return substr($fullPath, $startPos, $endPos - $startPos);
