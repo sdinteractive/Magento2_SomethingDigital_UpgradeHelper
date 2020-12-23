@@ -9,6 +9,7 @@ use SomethingDigital\UpgradeHelper\Model\Runner;
 use SomethingDigital\UpgradeHelper\Model\LineProcessor;
 use SomethingDigital\UpgradeHelper\Model\Checker\Preferences as PreferenceChecker;
 use SomethingDigital\UpgradeHelper\Model\Checker\Overrides as OverrideChecker;
+use SomethingDigital\UpgradeHelper\Model\FileIndex;
 
 class RunnerTest extends TestCase
 {
@@ -17,6 +18,7 @@ class RunnerTest extends TestCase
     private $overrideChecker;
     private $objectManagerConfig;
     private $preferenceChecker;
+    private $fileIndex;
 
     protected function setUp(): void
     {
@@ -24,7 +26,13 @@ class RunnerTest extends TestCase
         $objectManager = new ObjectManager($this);
 
         $this->lineProcessor = $objectManager->getObject(LineProcessor::class);
-        $this->overrideChecker = $objectManager->getObject(OverrideChecker::class);
+        $this->fileIndex = $objectManager->getObject(FileIndex::class);
+        $this->overrideChecker = $objectManager->getObject(
+            OverrideChecker::class,
+            [
+                'fileIndex' => $this->fileIndex
+            ]
+        );
 
         $this->objectManagerConfig = $this->createMock(ObjectManagerConfig::class);
         $this->objectManagerConfig->method('getPreferences')
@@ -45,7 +53,8 @@ class RunnerTest extends TestCase
             [
                 'lineProcessor' => $this->lineProcessor,
                 'overrideChecker' => $this->overrideChecker,
-                'preferenceChecker' => $this->preferenceChecker
+                'preferenceChecker' => $this->preferenceChecker,
+
             ]
         );
 
@@ -53,6 +62,8 @@ class RunnerTest extends TestCase
 
     public function testRun()
     {
+        $this->fileIndex->populateIndex();
+
         $diff = [
             'diff -r Magento-EE-2.3.1/vendor/magento/module-sales-rule/view/frontend/web/js/action/set-coupon-code.js Magento-EE-2.3.3/vendor/magento/module-sales-rule/view/frontend/web/js/action/set-coupon-code.js',
             'diff -r Magento-EE-2.3.1/vendor/magento/module-checkout/view/frontend/web/js/view/billing-address.js Magento-EE-2.3.3/vendor/magento/module-checkout/view/frontend/web/js/view/billing-address.js',
@@ -70,7 +81,6 @@ class RunnerTest extends TestCase
             extract($this->runner->run($line));
             $result[$type][$path] = $items;
         }
-
         // Theme (app/design) .js override
         $this->assertTrue(
             $this->arrays_are_similar(
