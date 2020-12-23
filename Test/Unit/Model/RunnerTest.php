@@ -54,7 +54,6 @@ class RunnerTest extends TestCase
                 'lineProcessor' => $this->lineProcessor,
                 'overrideChecker' => $this->overrideChecker,
                 'preferenceChecker' => $this->preferenceChecker,
-
             ]
         );
 
@@ -87,7 +86,6 @@ class RunnerTest extends TestCase
                 $result['overrides']['vendor/magento/module-sales-rule/view/frontend/web/js/action/set-coupon-code.js'],
                 [
                     'app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_SalesRule/web/js/action/set-coupon-code.js',
-                    'app/code/SomethingDigital/UpgradeHelper/Test/Fixtures/app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_SalesRule/web/js/action/set-coupon-code.js'
                 ]
             )
         );
@@ -98,7 +96,6 @@ class RunnerTest extends TestCase
                 $result['overrides']['vendor/magento/module-bundle/view/frontend/templates/js/components.phtml'],
                 [
                     'app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_Catalog/templates/js/components.phtml',
-                    'app/code/SomethingDigital/UpgradeHelper/Test/Fixtures/app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_Catalog/templates/js/components.phtml'
                 ]
             )
         );
@@ -138,8 +135,6 @@ class RunnerTest extends TestCase
                 [
                     'app/design/frontend/SomethingDigitalUpgradeHelper/theme2/Magento_Customer/templates/form/forgotpassword.phtml',
                     'app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_Customer/templates/form/forgotpassword.phtml',
-                    'app/code/SomethingDigital/UpgradeHelper/Test/Fixtures/app/design/frontend/SomethingDigitalUpgradeHelper/theme2/Magento_Customer/templates/form/forgotpassword.phtml',
-                    'app/code/SomethingDigital/UpgradeHelper/Test/Fixtures/app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_Customer/templates/form/forgotpassword.phtml'
                 ]
             )
         );
@@ -159,6 +154,9 @@ class RunnerTest extends TestCase
      * @return bool
      */
     protected function arrays_are_similar($a, $b) {
+        sort($a);
+        sort($b);
+
         // if the indexes don't match, return immediately
         if (count(array_diff_assoc($a, $b))) {
             return false;
