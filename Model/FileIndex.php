@@ -15,6 +15,10 @@ class FileIndex
             'less'
     ];
 
+    const WHITELISTED_BASENAMES = [
+        'requirejs-config.js'
+    ];
+
     /**
      * @var array[]
      */
@@ -41,8 +45,8 @@ class FileIndex
      */
     public function getOverrideResults(array $pathInfo): array
     {
-        $moduleResults = $this->getResultsByType($pathInfo, self::MODULE_OVERRIDE);
-        $themeResults = $this->getResultsByType($pathInfo, self::THEME_OVERRIDE);
+        $moduleResults = $this->getResultsByOverrideType($pathInfo, self::MODULE_OVERRIDE);
+        $themeResults = $this->getResultsByOverrideType($pathInfo, self::THEME_OVERRIDE);
         return array_merge($moduleResults, $themeResults);
     }
 
@@ -58,9 +62,12 @@ class FileIndex
         $directory = new \RecursiveDirectoryIterator($basePath);
         $iterator = new \RecursiveIteratorIterator($directory);
         $regexIterator = new \RegexIterator($iterator, $filePattern, \RecursiveRegexIterator::GET_MATCH);
+
         foreach ($regexIterator as $dirInfo) {
             $fullPath = $dirInfo[0];
-            $this->index[$overrideType][basename($fullPath)][] = $fullPath;
+            if (!in_array(basename($fullPath), self::WHITELISTED_BASENAMES)) {
+                $this->index[$overrideType][basename($fullPath)][] = $fullPath;
+            }
         }
     }
 
