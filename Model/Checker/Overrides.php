@@ -2,48 +2,16 @@
 
 namespace SomethingDigital\UpgradeHelper\Model\Checker;
 
+use SomethingDigital\UpgradeHelper\Model\FileIndex;
+
 class Overrides
 {
-    private $interestingExtensions = [
-        'phtml',
-        'js',
-        'html',
-        'less'
-    ];
+    private $fileIndex;
 
-    private $whitelistedBasenames = [
-        'requirejs-config.js'
-    ];
-
-    private $endPosition;
-
-    /**
-     * Command for checking modules
-     *
-     * Example command:
-     * find . -name gift-card-account.js -path '*\/view/frontend/web/js/view/cart/totals/*'
-     */
-    private function moduleCmd($pathInfo)
-    {
-        $start = strpos($pathInfo['fullpath'], '/view/');
-        $path = substr($pathInfo['fullpath'], $start, $this->endPosition - $start);
-
-        return "find . -name " . $pathInfo['basename'] . " -path '*" . $path . "*'";
-    }
-
-    /**
-     * Command for checking theme
-     *
-     * Example command:
-     * find . -name gift-card-account.js -path '*app/design/*' -path '*web/js/view/cart/totals/*'
-     */
-    private function themeCmd($pathInfo)
-    {
-        $startKey = '/frontend/';
-        $startPos = strpos($pathInfo['fullpath'], $startKey) + strlen($startKey);
-        $path = substr($pathInfo['fullpath'], $startPos, $this->endPosition - $startPos);
-
-        return "find . -name " . $pathInfo['basename'] . " -path '*app/design/*' -path '*" . $path . "*'";
+    public function __construct(
+        FileIndex $fileIndex
+    ) {
+        $this->fileIndex = $fileIndex;
     }
 
     /**
@@ -55,16 +23,11 @@ class Overrides
         if (!$this->shouldCheck($pathInfo)) {
             return [];
         }
-
-        $this->endPosition = strpos($path, $pathInfo['basename']);
-
-        $moduleResults = explode(PHP_EOL, trim(shell_exec($this->moduleCmd($pathInfo))));
-        $themeResults = explode(PHP_EOL, trim(shell_exec($this->themeCmd($pathInfo))));
-        $results = array_merge($moduleResults, $themeResults);
+        
+        $results = $this->fileIndex->getOverrideResults($pathInfo);
         $output = [];
 
         foreach ($results as $result) {
-            $result = substr($result, 2);
             if ($this->isOverride($result, $path)) {
                 $customized[] = $result;
             }
@@ -86,11 +49,11 @@ class Overrides
             return false;
         }
 
-        if (!in_array($pathInfo['extension'], $this->interestingExtensions)) {
+        if (!in_array($pathInfo['extension'], FileIndex::INTERESTING_EXTENSIONS)) {
             return false;
         }
 
-        if (in_array($pathInfo['basename'], $this->whitelistedBasenames)) {
+        if (in_array($pathInfo['basename'], FileIndex::WHITELISTED_BASENAMES)) {
             return false;
         }
 
