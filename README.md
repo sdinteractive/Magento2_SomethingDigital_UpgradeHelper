@@ -62,7 +62,7 @@ The tool has also flagged the vendor/amzn template, however upon inspection it i
 
 ## False Positives
 
-The tool currently does a rough search using linux `find` utility to determine whether or not a given file is overridden. This search is likely to generate false positives. The philosophy here is it's better for the tool to generate false positives, which can then be reviewed to determine if any action is required than it is to have false negatives, which may cause obscure bugs when deployed to production.
+The tool currently does a rough search on the basename in `vendor/`, `app/code` and `app/design/` to determine whether or not a given file is overridden. This search is likely to generate false positives. The philosophy here is it's better for the tool to generate false positives, which can then be reviewed to determine if any action is required than it is to have false negatives, which may cause obscure bugs when deployed to production.
 
 ## Testing
 
