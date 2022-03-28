@@ -24,11 +24,13 @@ app/code/SomethingDigital/UpgradeHelper
 
 ### Generating the diff
 
-> Are you a Something Digital employee? If so, the diff is likely already available for you here: https://github.com/sdinteractive/m2-diffs
+> Are you a Rightpoint employee? If so, the diff is likely already available for you here: https://github.com/sdinteractive/m2-diffs.
 
-- Download a ZIP of the old version
-- Download a ZIP of the new version
+- Use `composer create-project` to get a clean copy of the old version code
+- Use `composer create-project` to get a clean copy of the new version code
 - Use `diff -r` to generate the diff
+
+For the purposes of generating the diff composer's `--ignore-platform-reqs` is fine, you do not actually need to run the Magento application, just get a copy of the code.
 
 Example:
 
