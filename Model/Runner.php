@@ -4,6 +4,7 @@ namespace SomethingDigital\UpgradeHelper\Model;
 
 use SomethingDigital\UpgradeHelper\Model\Checker\Preferences as PreferenceChecker;
 use SomethingDigital\UpgradeHelper\Model\Checker\Overrides as OverrideChecker;
+use SomethingDigital\UpgradeHelper\Model\Checker\EmailTemplate as EmailTemplateChecker;
 
 class Runner
 {
@@ -13,20 +14,25 @@ class Runner
 
     private $overrideChecker;
 
+    private $emailTemplateChecker;
+
     private $checkers;
 
     public function __construct(
         LineProcessor $lineProcessor,
         PreferenceChecker $preferenceChecker,
-        OverrideChecker $overrideChecker
+        OverrideChecker $overrideChecker,
+        EmailTemplateChecker $emailTemplateChecker
     ) {
         $this->lineProcessor = $lineProcessor;
         $this->preferenceChecker = $preferenceChecker;
         $this->overrideChecker = $overrideChecker;
+        $this->emailTemplateChecker = $emailTemplateChecker;
 
         $this->checkers = [
             'preferences' => $this->preferenceChecker,
-            'overrides' => $this->overrideChecker
+            'overrides' => $this->overrideChecker,
+            'email_template' => $this->emailTemplateChecker,
         ];
     }
 

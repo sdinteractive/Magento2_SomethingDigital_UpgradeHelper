@@ -41,6 +41,7 @@ class UpgradeHelperCommand extends Command
         $result = [];
         $result['preferences'] = [];
         $result['overrides'] = [];
+        $result['email_template'] = [];
 
         $output->writeln('Populating file override index...');
         $this->fileIndex->populateIndex();

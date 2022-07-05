@@ -15,6 +15,10 @@ class FileIndex
             'less'
     ];
 
+    const EMAIL_EXTENSIONS = [
+            'html',
+    ];
+
     const WHITELISTED_BASENAMES = [
         'requirejs-config.js'
     ];
