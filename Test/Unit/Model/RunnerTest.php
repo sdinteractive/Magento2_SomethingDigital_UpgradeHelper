@@ -9,6 +9,7 @@ use SomethingDigital\UpgradeHelper\Model\Runner;
 use SomethingDigital\UpgradeHelper\Model\LineProcessor;
 use SomethingDigital\UpgradeHelper\Model\Checker\Preferences as PreferenceChecker;
 use SomethingDigital\UpgradeHelper\Model\Checker\Overrides as OverrideChecker;
+use SomethingDigital\UpgradeHelper\Model\Checker\EmailTemplate as EmailTemplateChecker;
 use SomethingDigital\UpgradeHelper\Model\FileIndex;
 
 class RunnerTest extends TestCase
@@ -48,15 +49,24 @@ class RunnerTest extends TestCase
             ]
         );
 
+        $this->emailTemplateChecker = $this->createMock(EmailTemplateChecker::class);
+
+        $mockOutput = [
+            'patched' => 'vendor/magento/module-sales/view/frontend/email/order_new.html',
+            'customized' => ['New Pickup Order']
+        ];
+
+        $this->emailTemplateChecker->expects($this->any())->method('check')->willReturn($mockOutput);
+
         $this->runner = $objectManager->getObject(
             Runner::class,
             [
                 'lineProcessor' => $this->lineProcessor,
                 'overrideChecker' => $this->overrideChecker,
                 'preferenceChecker' => $this->preferenceChecker,
+                'emailTemplateChecker' => $this->emailTemplateChecker
             ]
         );
-
     }
 
     public function testRun()
@@ -69,17 +79,20 @@ class RunnerTest extends TestCase
             'diff -r Magento-EE-2.3.1/vendor/magento/module-bundle/view/frontend/templates/js/components.phtml Magento-EE-2.3.3/vendor/magento/module-bundle/view/frontend/templates/js/components.phtml',
             'diff -r Magento-EE-2.3.1/vendor/magento/module-checkout/view/frontend/web/template/billing-address/details.html Magento-EE-2.3.3/vendor/magento/module-checkout/view/frontend/web/template/billing-address/details.html',
             'diff -r Magento-EE-2.3.1/vendor/magento/module-customer/view/frontend/templates/form/forgotpassword.phtml Magento-EE-2.3.3/vendor/magento/module-customer/view/frontend/templates/form/forgotpassword.phtml',
-            'diff -r Magento-EE-2.3.1/vendor/magento/module-catalog-rule/Controller/Adminhtml/Promo/Catalog/Save.php Magento-EE-2.3.3/vendor/magento/module-catalog-rule/Controller/Adminhtml/Promo/Catalog/Save.php'
+            'diff -r Magento-EE-2.3.1/vendor/magento/module-catalog-rule/Controller/Adminhtml/Promo/Catalog/Save.php Magento-EE-2.3.3/vendor/magento/module-catalog-rule/Controller/Adminhtml/Promo/Catalog/Save.php',
+            'diff -r Magento-EE-2.3.1/vendor/magento/module-sales/view/frontend/email/order_new.html Magento-EE-2.3.3/vendor/magento/module-sales/view/frontend/email/order_new.html'
         ];
 
         $result = [];
         $result['preferences'] = [];
         $result['overrides'] = [];
+        $result['email_template'] = [];
         foreach ($diff as $line) {
             // Extract will populate: $type, $path, $items
             extract($this->runner->run($line));
             $result[$type][$path] = $items;
         }
+
         // Theme (app/design) .js override
         $this->assertTrue(
             $this->arrays_are_similar(
@@ -136,6 +149,13 @@ class RunnerTest extends TestCase
                     'app/design/frontend/SomethingDigitalUpgradeHelper/theme2/Magento_Customer/templates/form/forgotpassword.phtml',
                     'app/design/frontend/SomethingDigitalUpgradeHelper/theme/Magento_Customer/templates/form/forgotpassword.phtml',
                 ]
+            )
+        );
+
+        $this->assertTrue(
+            $this->arrays_are_similar(
+                $result['email_template']['vendor/magento/module-sales/view/frontend/email/order_new.html'],
+                ['New Pickup Order']
             )
         );
 
