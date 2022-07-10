@@ -20,13 +20,11 @@ class EmailTemplate
     private $appState;
 
     public function __construct(
-        FileIndex $fileIndex,
         CoreEmailTemplateFactory $emailTemplateFactory,
         Config $config,
         AppState $appState
     ) {
         $this->appState = $appState;
-        $this->fileIndex = $fileIndex;
         $this->emailTemplateFactory = $emailTemplateFactory;
         $this->config = $config;
     }
