@@ -74,4 +74,5 @@ class UpgradeHelperCommand extends Command
             }
         }
     }
+    return Command::SUCCESS;
 }
