@@ -1,0 +1,14 @@
+{
+    "name": "somethingdigital/magento2-upgradehelper",
+    "description": "This tool assists engineers in identifying changes to Magento core and how they can impact customizations",
+    "type": "magento2-module",
+    "require": {
+        "symfony/console": "^5.1"
+    },
+    "license": "proprietary",
+    "autoload": {
+        "psr-4": {
+            "SomethingDigital\\Upgradehelper\\": ""
+        }
+    }
+}
