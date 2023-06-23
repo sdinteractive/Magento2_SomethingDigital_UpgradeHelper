@@ -12,6 +12,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class UpgradeHelperCommand extends Command
 {
+    const SUCCESS = 0;
+
     private $runner;
 
     private $fileIndex;
@@ -73,6 +75,6 @@ class UpgradeHelperCommand extends Command
                 }
             }
         }
+        return self::SUCCESS;
     }
-    return Command::SUCCESS;
 }
