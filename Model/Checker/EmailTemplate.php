@@ -5,7 +5,6 @@ namespace SomethingDigital\UpgradeHelper\Model\Checker;
 use SomethingDigital\UpgradeHelper\Model\FileIndex;
 use Magento\Email\Model\TemplateFactory as CoreEmailTemplateFactory;
 use Magento\Email\Model\Template\Config;
-use Magento\Framework\App\State as AppState;
 
 class EmailTemplate
 {
@@ -17,21 +16,16 @@ class EmailTemplate
 
     private $templateMappings = [];
 
-    private $appState;
-
     public function __construct(
         CoreEmailTemplateFactory $emailTemplateFactory,
-        Config $config,
-        AppState $appState
+        Config $config
     ) {
-        $this->appState = $appState;
         $this->emailTemplateFactory = $emailTemplateFactory;
         $this->config = $config;
     }
 
     public function mapEmailTemplates()
     {
-        $this->appState->setAreaCode(\Magento\Framework\App\Area::AREA_FRONTEND);
         $emailTemplateCollection = $this->emailTemplateFactory->create()->getCollection();
 
         foreach ($emailTemplateCollection as $template) {
