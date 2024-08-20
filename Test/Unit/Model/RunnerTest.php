@@ -20,6 +20,7 @@ class RunnerTest extends TestCase
     private $objectManagerConfig;
     private $preferenceChecker;
     private $fileIndex;
+    private $emailTemplateChecker;
 
     protected function setUp(): void
     {
