@@ -22,8 +22,8 @@ class LineProcessor
      */
     public function toPathInfo($line)
     {
-        // Skip lines that don't start with `diff -r`
-        if (strpos($line, 'diff -r') !== 0) {
+        // Skip lines that don't start with `diff`
+        if (strpos($line, 'diff') !== 0) {
             return [];
         }
 
