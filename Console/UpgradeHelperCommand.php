@@ -9,6 +9,8 @@ use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Magento\Framework\App\State;
+use Magento\Framework\App\Area;
 
 class UpgradeHelperCommand extends Command
 {
@@ -18,13 +20,17 @@ class UpgradeHelperCommand extends Command
 
     private $fileIndex;
 
+    private $appState;
+
     public function __construct(
         Runner $runner,
-        FileIndex $fileIndex
+        FileIndex $fileIndex,
+        State $appState
     ) {
         parent::__construct(null);
         $this->runner = $runner;
         $this->fileIndex = $fileIndex;
+        $this->appState = $appState;
     }
 
     protected function configure()
@@ -37,6 +43,7 @@ class UpgradeHelperCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->appState->setAreaCode(Area::AREA_GLOBAL);
         $diff = file($input->getArgument('diff'));
         $lines = count($diff);
 
