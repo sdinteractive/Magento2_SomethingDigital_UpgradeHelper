@@ -35,7 +35,7 @@ For the purposes of generating the diff composer's `--ignore-platform-reqs` is f
 Example:
 
 ```
-diff -r magento-2-2-6-ee magento-2-2-7-ee > magento-2-2-6-ee--2-2-7-ee.diff
+diff -r magento-2.2.6-ee magento-2.2.7-ee > magento-2.2.6-ee--2.2.7-ee.diff
 ```
 
 ### How To Run
