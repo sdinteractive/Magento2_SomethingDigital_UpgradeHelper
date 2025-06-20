@@ -41,7 +41,7 @@ diff -r magento-2-2-6-ee magento-2-2-7-ee > magento-2-2-6-ee--2-2-7-ee.diff
 ### How To Run
 
 ```
-$ bin/magento sd:dev:upgrade-helper magento-2-2-6-ee--2-2-7-ee.diff
+$ bin/magento sd:dev:upgrade-helper magento-2.2.6-ee--2.2.7-ee.diff
 ```
 
 > **NOTE:** Running on Vagrant without `nfs_guest` is intolerably slow. Either ensure you are running `nfs_guest` or else temporarily move the Magento installation out of `/vagrant` to run
@@ -49,7 +49,7 @@ $ bin/magento sd:dev:upgrade-helper magento-2-2-6-ee--2-2-7-ee.diff
 #### Example Output
 
 ```
-$ bin/magento sd:dev:upgrade-helper magento-2-2-6-ee--2-2-7-ee.diff
+$ bin/magento sd:dev:upgrade-helper magento-2.2.6-ee--2.2.7-ee.diff
 -------- PREFERENCES --------
 Patched: vendor/magento/module-catalog/Block/Product/ImageBuilder.php
 Customized: Company\Module\Block\Product\ImageBuilder
